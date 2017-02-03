@@ -1,0 +1,16 @@
+{
+  "name": "bonde-test",
+  "version": "0.0.1",
+  "description": "",
+  "main": "test.js",
+  "scripts": {
+    "test": "casperjs test test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "GPL",
+  "dependencies": {
+    "casperjs": "^1.1.3",
+    "phantomjs": "^2.1.7"
+  }
+}

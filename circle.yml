@@ -1,0 +1,5 @@
+machine:
+  timezone:
+    America/Sao_Paulo
+  node:
+    version: stable
