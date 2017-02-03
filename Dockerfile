@@ -1,6 +1,6 @@
 FROM node:latest
-RUN apt-get install make gcc g++ python git
+ENV host app.reboo-staging.org
 RUN mkdir /code
 WORKDIR /code
 RUN npm install -g phantomjs casperjs
-CMD ["./node_modules/.bin/casperjs", "test", "test.js"]
+CMD ["./node_modules/.bin/casperjs", "test", "tests/"]

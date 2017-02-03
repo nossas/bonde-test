@@ -3,3 +3,8 @@ machine:
     America/Sao_Paulo
   node:
     version: stable
+  environment:
+    host: app.reboo-staging.org
+general:
+  artifacts:
+    - "screenshots" # relative to the build directory
