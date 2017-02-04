@@ -17,7 +17,7 @@ casper.on('page.error', function (msg, trace) {
 casper.test.begin('Login', 1, function suite (test) {
   casper.start('http://app.reboo-staging.org')
   casper.then(function () {
-    this.capture('screenshots/login.png')
+    this.capture('screenshots/0-login.png')
     this.waitForResource(/.*\.(js|png)$/, function () {
       this.echo('foobar.png or foobaz.png has been loaded.')
     })
@@ -33,10 +33,14 @@ casper.test.begin('Login', 1, function suite (test) {
 
     this.test.assertFieldCSS(signinForm + ' [id="emailId"]', 'foo@bar.com') // undefined
     this.test.assertFieldCSS(signinForm + ' [id="passwordId"]', 'foobar') // undefined
+    this.capture('screenshots/1-login.png')
 
-    this.click(signinForm + ' button')
-
-    this.capture('screenshots/login-1.png')
+    casper.wait(10000, function () {
+      this.click(signinForm + ' button')
+      casper.wait(5000, function () {
+        this.capture('screenshots/2-login.png')
+      })
+    })
   })
 
   casper.then(function () {
