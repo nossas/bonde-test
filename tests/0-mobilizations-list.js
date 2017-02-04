@@ -3,6 +3,16 @@
 casper.options.exitOnError = false
 casper.options.logLevel = 'debug'
 casper.options.verbose = true
+casper.options.viewportSize = { width: 1024, height: 768 }
+var errors = []
+
+casper.on('page.error', function (msg, trace) {
+  this.echo('Error:    ' + msg, 'ERROR')
+  this.echo('file:     ' + trace[0].file, 'WARNING')
+  this.echo('line:     ' + trace[0].line, 'WARNING')
+  this.echo('function: ' + trace[0]['function'], 'WARNING')
+  errors.push(msg)
+})
 
 casper.test.begin('Login', 1, function suite (test) {
   casper.start('http://app.reboo-staging.org')
@@ -15,14 +25,14 @@ casper.test.begin('Login', 1, function suite (test) {
     var signinForm = 'form'
 
     this.test.assertExist(signinForm, 'Signin form exists')
-    this.test.assertExist('[id="emailId"]', 'Email field exists')
-    this.test.assertExist('[id="passwordId"]', 'Password field exists')
+    this.test.assertExist(signinForm + ' [id="emailId"]', 'Email field exists')
+    this.test.assertExist(signinForm + ' [id="passwordId"]', 'Password field exists')
 
     this.sendKeys(signinForm + ' [id="emailId"]', 'foo@bar.com')
     this.sendKeys(signinForm + ' [id="passwordId"]', 'foobar')
 
-    this.test.assertFieldCSS('[id="emailId"]', 'foo@bar.com') // undefined
-    this.test.assertFieldCSS('[id="passwordId"]', 'foobar') // undefined
+    this.test.assertFieldCSS(signinForm + ' [id="emailId"]', 'foo@bar.com') // undefined
+    this.test.assertFieldCSS(signinForm + ' [id="passwordId"]', 'foobar') // undefined
 
     this.click(signinForm + ' button')
 
@@ -41,5 +51,11 @@ casper.test.begin('Login', 1, function suite (test) {
 
   casper.run(function () {
     this.test.renderResults(true)
+    if (errors.length > 0) {
+      this.echo(errors.length + ' Javascript errors found', 'WARNING')
+    } else {
+      this.echo(errors.length + ' Javascript errors found', 'INFO')
+    }
+    casper.exit()
   })
 })
