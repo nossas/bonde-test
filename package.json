@@ -4,7 +4,7 @@
   "description": "",
   "main": "test.js",
   "scripts": {
-    "test": "casperjs test test.js"
+    "test": "casperjs test tests/"
   },
   "keywords": [],
   "author": "",
