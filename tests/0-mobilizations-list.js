@@ -1,8 +1,11 @@
 /* global __utils__, require:true, casper:true */
 
 casper.options.exitOnError = false
-casper.options.logLevel = 'debug'
-casper.options.verbose = true
+// casper.options.logLevel = 'debug'
+// casper.options.verbose = true
+casper.options.pageSettings.loadImages = true        // The WebPage instance used by Casper will
+casper.options.pageSettings.loadPlugins = true         // use these settings
+
 casper.options.viewportSize = { width: 1024, height: 768 }
 var errors = []
 
@@ -14,12 +17,29 @@ casper.on('page.error', function (msg, trace) {
   errors.push(msg)
 })
 
-casper.test.begin('Login', 1, function suite (test) {
-  casper.start('http://app.reboo-staging.org')
+casper.on('resource.error', function (resourceError) {
+  this.echo('ResourceError: ' + JSON.stringify(resourceError, undefined, 4))
+})
+
+casper.on('remote.message', function (msg) {
+  this.echo('Console: ' + msg)
+})
+
+casper.on('page.initialized', function (page) {
+  // CasperJS doesn't provide `onResourceTimeout`, so it must be set through
+  // the PhantomJS means. This is only possible when the page is initialized
+  page.onResourceTimeout = function (request) {
+    console.log('Response Timeout (#' + request.id + '): ' + JSON.stringify(request))
+  }
+})
+
+casper.test.begin('Login', 5, function suite (test) {
+  casper.start('http://reboo-staging.org')
+  // casper.start('http://bonde.devel:3001')
   casper.then(function () {
     this.capture('screenshots/0-login.png')
     this.waitForResource(/.*\.(js|png)$/, function () {
-      this.echo('foobar.png or foobaz.png has been loaded.')
+      this.echo('assets has been loaded.')
     })
 
     var signinForm = 'form'
@@ -35,10 +55,11 @@ casper.test.begin('Login', 1, function suite (test) {
     this.test.assertFieldCSS(signinForm + ' [id="passwordId"]', 'foobar') // undefined
     this.capture('screenshots/1-login.png')
 
-    casper.wait(10000, function () {
+    casper.wait(2000, function () {
       this.click(signinForm + ' button')
-      casper.wait(5000, function () {
+      casper.wait(4000, function () {
         this.capture('screenshots/2-login.png')
+        this.test.done()
       })
     })
   })
@@ -46,20 +67,19 @@ casper.test.begin('Login', 1, function suite (test) {
   casper.then(function () {
     console.log('clicked ok, new location is ' + this.getCurrentUrl())
 
-    test.assertUrlMatch(/community/, 'listing communities')
-    test.assertEval(function () {
-      return __utils__.findAll('.rounded.bg-white .ListItem').length >= 1 &&
-        casper.capture('screenshots/login-2.png')
-    }, 'at least one community is available')
+    this.test.assertUrlMatch(/community/, 'listing communities')
+    this.test.assertExists('.rounded.bg-white .ListItem', 'at least one community is available')
+    this.capture('screenshots/login-2.png')
+    this.test.done()
   })
+})
 
-  casper.run(function () {
-    this.test.renderResults(true)
-    if (errors.length > 0) {
-      this.echo(errors.length + ' Javascript errors found', 'WARNING')
-    } else {
-      this.echo(errors.length + ' Javascript errors found', 'INFO')
-    }
-    casper.exit()
-  })
+casper.run(function () {
+  this.test.renderResults(true)
+  if (errors.length > 0) {
+    this.echo(errors.length + ' Javascript errors found', 'WARNING')
+  } else {
+    this.echo(errors.length + ' Javascript errors found', 'INFO')
+  }
+  casper.exit()
 })
