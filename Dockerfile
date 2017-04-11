@@ -19,7 +19,7 @@ ENV PHANTOMJS_VERSION 2.1.1
 ENV CASPERJS_VERSION 1.1.4
 ENV SLIMERJS_VERSION 0.10.3
 
-ENV host=0-client.reboo-staging.org SLIMERJSLAUNCHER=/usr/bin/firefox
+ENV host=staging.bonde.org SLIMERJSLAUNCHER=/usr/bin/firefox
 
 # Installing dependencies from archives - not only this allows us to control versions,
 # but the resulting image size is 130MB+ less (!) compared to an npm install (440MB vs 575MB).

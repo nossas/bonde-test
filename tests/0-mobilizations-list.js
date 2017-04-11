@@ -1,11 +1,25 @@
-/* global __utils__, require:true, casper:true */
-
+/* global require:true, casper:true */
 
 casper.options.exitOnError = false
 // casper.options.logLevel = 'debug'
 // casper.options.verbose = true
-casper.options.pageSettings.loadImages = true        // The WebPage instance used by Casper will
-casper.options.pageSettings.loadPlugins = true         // use these settings
+// casper.options.pageSettings.loadImages = true        // The WebPage instance used by Casper will
+// casper.options.pageSettings.loadPlugins = true         // use these settings
+// casper.options.pageSettings.localToRemoteUrlAccess = true
+
+casper.options.pageSettings.allowMedia = true                       // value of --allow-media
+casper.options.pageSettings.javascriptEnabled = true
+casper.options.pageSettings.loadImages = true                       // value of --load-images
+casper.options.pageSettings.localToRemoteUrlAccessEnabled = false   // value of --local-to-remote-url-access
+casper.options.pageSettings.XSSAuditingEnabled = false
+casper.options.pageSettings.webSecurityEnabled = true               // value of --web-security
+casper.options.pageSettings.javascriptCanOpenWindows = true
+casper.options.pageSettings.javascriptCanCloseWindows = true
+casper.options.pageSettings.userAgent = 'SlimerJS'
+casper.options.pageSettings.userName = undefined
+casper.options.pageSettings.password = undefined
+casper.options.pageSettings.maxAuthAttempts = undefined
+casper.options.pageSettings.resourceTimeout = undefined
 
 casper.options.viewportSize = { width: 1024, height: 768 }
 var errors = []
@@ -35,7 +49,7 @@ casper.on('page.initialized', function (page) {
 })
 
 casper.test.begin('Login', 5, function suite (test) {
-  casper.start('http://reboo-staging.org')
+  casper.start('http://staging.bonde.org')
   // casper.start('http://bonde.devel:3001')
   casper.then(function () {
     this.capture('screenshots/0-login.png')
