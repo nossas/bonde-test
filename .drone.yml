@@ -2,17 +2,15 @@ pipeline:
   build:
     image: nossas/bonde-test
     commands:
-      - casperjs --engine=slimerjs test tests
+      - yarn
+      - yarn test
+
   publish:
     image: plugins/docker
     repo: nossas/bonde-test
-    username: lpirola
-    password: ${DOCKER_PASSWORD}
+    secrets: [ docker_username, docker_password ]
     tags:
       - ${DRONE_BRANCH}
-    when:
-      status: success
-      branch: [master]
 
   notify:
     image: plugins/slack
