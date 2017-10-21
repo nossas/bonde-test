@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 FROM node:8-slim
 
 # Install latest chrome dev package.
@@ -21,6 +22,17 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 # Install puppeteer so it's available in the container.
 # RUN yarn add puppeteer
 
+=======
+FROM node:alpine
+
+RUN apk add --no-cache \
+	bash \
+	coreutils \
+	curl \
+	git
+
+COPY . /code
+>>>>>>> feature(devops): Remove casperjs and old strategy to test; Ava take place as test runner
 WORKDIR /code
 COPY . /code
 
@@ -37,4 +49,9 @@ USER pptruser
 
 RUN yarn install
 
+<<<<<<< HEAD
+=======
+RUN yarn
+
+>>>>>>> feature(devops): Remove casperjs and old strategy to test; Ava take place as test runner
 CMD ["yarn", "test"]
