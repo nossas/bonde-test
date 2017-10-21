@@ -7,7 +7,7 @@ test('foo', t => {
 
 test('bar', async t => {
 
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({executablePath: 'google-chrome-unstable', args: ['--no-sandbox']})
   const page = await browser.newPage();
   await page.goto('https://google.com', {waitUntil: 'networkidle'});
   // Type our query into the search bar
