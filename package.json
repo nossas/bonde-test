@@ -8,8 +8,10 @@
   },
   "keywords": [],
   "author": "",
-  "license": "GPL",
-  "devDependencies": {
-    "ava": "^0.22.0"
+  "license": "GPL-3.0",
+  "dependencies": {
+    "ava": "^0.22.0",
+    "eslint": "^4.9.0",
+    "puppeteer": "^0.12.0"
   }
 }
