@@ -6,7 +6,7 @@ import puppeteer from'puppeteer';
 
 test.beforeEach(async t => {
   const browserConfig = {
-    // executablePath: 'google-chrome-unstable',
+    executablePath: 'google-chrome-unstable',
     // headless: false,
     args: ['--no-sandbox']
   }
