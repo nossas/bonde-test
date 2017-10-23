@@ -1,58 +1,40 @@
-FROM node:alpine
+FROM node:8-slim
 
-RUN apk add --no-cache \
-	bash \
-	coreutils \
-	curl \
-	git \
-	python \
-	dbus \
-	firefox-esr \
-	fontconfig \
-	ttf-freefont \
-	xvfb
+# Install latest chrome dev package.
+# Note: this installs the necessary libs to make the bundled version of Chromium that Pupppeteer
+# installs, work.
+RUN apt-get update && apt-get install -y wget --no-install-recommends \
+    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
+    && apt-get update \
+    && apt-get install -y google-chrome-unstable \
+      --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get purge --auto-remove -y curl \
+    && rm -rf /src/*.deb
 
-# xvfb wrapper
-COPY xvfb-run /usr/bin/xvfb-run
+# Uncomment to skip the chromium download when installing puppeteer. If you do,
+# you'll need to launch puppeteer with:
+#     browser.launch({executablePath: 'google-chrome-unstable'})
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
-ENV PHANTOMJS_VERSION 2.1.1
-ENV CASPERJS_VERSION 1.1.4
-ENV SLIMERJS_VERSION 0.10.3
+# Install puppeteer so it's available in the container.
+# RUN yarn add puppeteer
 
-ENV host=staging.bonde.org SLIMERJSLAUNCHER=/usr/bin/firefox
-
-# Installing dependencies from archives - not only this allows us to control versions,
-# but the resulting image size is 130MB+ less (!) compared to an npm install (440MB vs 575MB).
-RUN \
-	mkdir -p /opt && \
-	# PhantomJS
-	echo "Downloading PhantomJS v${PHANTOMJS_VERSION}..." && \
-	curl -sL "https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-${PHANTOMJS_VERSION}-linux-x86_64.tar.bz2" | tar jx && \
-	mv phantomjs-${PHANTOMJS_VERSION}-linux-x86_64 /opt/phantomjs && \
-	ln -s /opt/phantomjs/bin/phantomjs /usr/bin/phantomjs && \
-	echo "Fixing PhantomJS on Alpine" && \
-	curl -sL "https://github.com/dustinblackman/phantomized/releases/download/${PHANTOMJS_VERSION}/dockerized-phantomjs.tar.gz" | tar zx -C /
-
-RUN \
-	# CasperJS
-	echo "Downloading CasperJS v${CASPERJS_VERSION}..." && \
-	curl -sL "https://github.com/casperjs/casperjs/archive/${CASPERJS_VERSION}.tar.gz" | tar zx && \
-	mv casperjs-${CASPERJS_VERSION} /opt/casperjs && \
-	ln -s /opt/casperjs/bin/casperjs /usr/bin/casperjs
-
-RUN \
-	# SlimerJS
-	echo "Downloading SlimerJS v${SLIMERJS_VERSION}..." && \
-	curl -sL -O "http://download.slimerjs.org/releases/${SLIMERJS_VERSION}/slimerjs-${SLIMERJS_VERSION}.zip" && \
-	unzip -q slimerjs-${SLIMERJS_VERSION}.zip && rm -f slimerjs-${SLIMERJS_VERSION}.zip && \
-	mv slimerjs-${SLIMERJS_VERSION} /opt/slimerjs && \
-	# Run slimer with xvfb
-	echo '#!/usr/bin/env bash\nxvfb-run /opt/slimerjs/slimerjs "$@"' > /opt/slimerjs/slimerjs.sh && \
-	chmod +x /opt/slimerjs/slimerjs.sh && \
-	ln -s /opt/slimerjs/slimerjs.sh /usr/bin/slimerjs
-
-RUN chmod a+x /usr/bin/xvfb-run
-COPY . /code
 WORKDIR /code
+COPY . /code
 
-CMD ["casperjs", "--engine=slimerjs", "test", "tests"]
+# Add pptr user.
+RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
+    && mkdir -p /home/pptruser/Downloads \
+    && chown -R pptruser:pptruser /home/pptruser \
+    && chown -R pptruser:pptruser /code/node_modules
+
+# Run user as non privileged.
+USER pptruser
+
+# CMD ["google-chrome-unstable"]
+
+RUN yarn install
+
+CMD ["yarn", "test"]

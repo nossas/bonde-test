@@ -1,17 +1,17 @@
 {
   "name": "bonde-test",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "test.js",
   "scripts": {
-    "test": "casperjs --engine=slimerjs test tests/"
+    "test": "ava"
   },
   "keywords": [],
   "author": "",
-  "license": "GPL",
+  "license": "GPL-3.0",
   "dependencies": {
-    "babel-polyfill": "^6.23.0",
-    "casperjs": "^1.1.3",
-    "slimerjs": "^0.10.3"
+    "ava": "^0.22.0",
+    "eslint": "^4.9.0",
+    "puppeteer": "^0.12.0"
   }
 }
