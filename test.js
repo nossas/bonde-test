@@ -6,7 +6,7 @@ import puppeteer from'puppeteer';
 
 test.beforeEach(async t => {
   const browserConfig = {
-    executablePath: 'google-chrome-unstable',
+    // executablePath: 'google-chrome-unstable',
     // headless: false,
     args: ['--no-sandbox']
   }
@@ -18,29 +18,56 @@ test.beforeEach(async t => {
   await page.setViewport({ width: 1024, height: 768 })
   await page.goto('https://app.staging.bonde.org/login', {waitUntil: 'networkidle'});
 
-  await page.type('input[id="emailId"]', 'foo@bar.com');
-  await page.type('input[id="passwordId"]', 'foobar');
-  await page.click('button[type="submit"] span');
+  await page.waitForSelector('input[id="emailId"]');
+  await page.type('input[id="emailId"]', 'foo@bar.com', {delay: 100});
+  await page.type('input[id="passwordId"]', 'foobar', {delay: 150});
+  await page.click('button[type="submit"] span', {delay: 400});
   await page.screenshot({path: 'screenshots/0-login.png'});
 
   await page.waitForSelector('.rounded.bg-white .ListItem');
-  await page.click('.rounded.bg-white .ListItem:first-child');
   await page.screenshot({path: 'screenshots/1-communities-list.png'});
+  await page.click('.rounded.bg-white .ListItem:first-child');
 
   await page.waitForSelector('.settings-page-menu-layout');
-  await page.screenshot({path: 'screenshots/1-mobilizations-list.png'});
 });
 
 test('admin - mobilization list - /mobilizations', async t => {
-  const browser = t.context.browser
+  const { browser, page } = t.context;
+  await page.screenshot({path: 'screenshots/2-mobilizations-list.png'});
+  const title = await page.$eval('.settings-page-menu-layout h1', e => e.textContent)
+  t.is(title, 'Suas Mobilizações');
   await browser.close();
-
-  const bar = Promise.resolve('bar');
-  t.is(await bar, 'bar');
 });
 
-test.todo('admin - community - change')
-test.todo('admin - community - config info')
+test('admin - community - change', async t => {
+  const { browser, page } = t.context;
+
+  const mouse = page.mouse
+  mouse.move(30, 30)
+  await page.click('.sidenav .item-community-change a.col-4 span');
+
+  await page.waitForSelector('.rounded.bg-white .ListItem');
+  await page.screenshot({path: 'screenshots/3-communities-list.png'});
+  const title = await page.$eval('.content h2 span', e => e.textContent)
+  await page.click('.rounded.bg-white .ListItem:first-child');
+  t.is(title, 'Escolha uma das suas comunidades');
+  await browser.close();
+})
+
+test('admin - community - config info', async t => {
+  const { browser, page } = t.context;
+
+  const mouse = page.mouse
+  mouse.move(10, 10)
+  await page.click('.sidenav .item-community-change a.col-8 span');
+  mouse.move(300, 300)
+  await page.waitForSelector('.form-redux.form.transparent');
+  await page.screenshot({path: 'screenshots/4-community-config.png'});
+  const title = await page.$eval('.settings-page-menu-layout h1', e => e.textContent)
+  t.is(title, 'Configurações da comunidade');
+  await browser.close();
+})
+
 test.todo('admin - community - config invite')
 test.todo('admin - community - config mailchimp')
 test.todo('admin - community - config twillio')
