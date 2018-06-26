@@ -4,7 +4,7 @@
   "description": "",
   "main": "test.js",
   "scripts": {
-    "test": "ava"
+    "test": "ava -s"
   },
   "keywords": [],
   "author": "",
@@ -13,5 +13,10 @@
     "ava": "^0.22.0",
     "eslint": "^4.9.0",
     "puppeteer": "^0.12.0"
+  },
+  "ava": {
+    "files": [
+      "tests/*.js"
+    ]
   }
 }
