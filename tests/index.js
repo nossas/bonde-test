@@ -7,6 +7,7 @@ test.beforeEach(async t => {
     // headless: false,
     args: ['--no-sandbox']
   }
+
   const browser = await puppeteer.launch(browserConfig)
   // const browserWSEndpoint = browser.wsEndpoint()
   const page = await browser.newPage();
