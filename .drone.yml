@@ -11,7 +11,10 @@ pipeline:
     repo: nossas/bonde-test
     secrets: [ docker_username, docker_password ]
     tags:
-      - ${DRONE_BRANCH}
+      - ${DRONE_BRANCH/\//-}
+    when:
+      status: success
+      branch: [hotfix/*, release/*, feature/*, develop]
 
   notify:
     image: plugins/slack
