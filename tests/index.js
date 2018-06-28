@@ -75,7 +75,20 @@ test('admin - community - config info', async t => {
   t.is(title, 'Community Settings');
 })
 
-test.todo('admin - community - config invite')
+test('admin - community - config invite', async t => {
+    const { browser, page, mouse } = t.context;
+
+    mouse.move(2, 2);
+    await page.click('.sidenav .item-community-change a:nth-child(1) span span', { delay: 100 });
+    mouse.move(3, 3);
+    await page.waitForSelector('div.settings-page-menu-layout h1 span');
+    await page.screenshot({path: 'screenshots/05-community-invite.png'});
+
+    const title = await page.$eval('div > div > form > div:nth-child(2) > label', e => e.textContent);
+    t.is(title, 'Name');
+})
+
+
 test.todo('admin - community - config mailchimp')
 test.todo('admin - community - config twillio')
 test.todo('admin - community - config recipient')
