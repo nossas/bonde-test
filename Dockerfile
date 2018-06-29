@@ -34,6 +34,6 @@ COPY . /code
 # USER pptruser
 
 # CMD ["google-chrome-unstable"]
-RUN yarn
+RUN yarn install
 
 CMD ["yarn", "test"]
